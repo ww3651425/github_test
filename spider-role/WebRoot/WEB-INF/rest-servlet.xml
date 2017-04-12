@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:util="http://www.springframework.org/schema/util" 
+	
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+		
+		
+	<!-- 启用对带有 Spring 注释的类进行自动扫描 在实践中，它将检查控制器类中所定义的 @Controller 注释。   -->
+	<context:component-scan base-package="com.fashion.spider.web.controller" />
+	
+	<!-- 使用 @ReqeustMapping 注释的类或函数的 beans 由 Spring 处理  -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" >
+		<property name="messageConverters">
+		     <list>
+	  			 <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+	   				<property name="supportedMediaTypes">
+	   					 <list>
+	    					 <value>text/html;charset=UTF-8</value>
+	    				 </list>
+	   				</property>
+	  			 </bean>
+	 		 </list>
+		</property>
+	</bean>
+	
+	<!-- 配置freeMarker的模板路径 -->
+	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">  
+		<property name="templateLoaderPath">
+			<value>/WEB-INF/content/</value>
+		</property>
+		<property name="freemarkerSettings">
+		    <props>
+                <prop key="template_update_delay">0</prop>
+                <prop key="defaultEncoding">UTF-8</prop>
+                <prop key="locale">zh_CN</prop>
+                <prop key="number_format">#</prop>
+                <prop key="date_format">yyyy-MM-dd</prop>
+                <prop key="time_format">HH:mm:ss</prop>
+                <prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+                <prop key="classic_compatible">true</prop>
+			</props>
+		</property>
+		<property name="freemarkerVariables">
+			<map>
+				<entry key="xml_escape" value-ref="fmXmlEscape" />
+			</map>
+		</property>
+	</bean>
+	<bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape"/>
+	
+	<!-- 配置freeMarker视图解析器 -->
+	<bean id="freemarkerViewResolver"  class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />
+		<property name="viewNames" value="*.ftl" />
+		<property name="contentType" value="text/html; charset=utf-8" />
+		<property name="cache" value="true" />
+		<property name="prefix" value="" />
+		<property name="suffix" value="" />
+		<property name="order" value="2" />
+	</bean>
+	
+    <!-- 全局拦截器    -->
+    <mvc:interceptors>  
+        <bean class="com.fashion.spider.web.interceptor.BaseInterceptor"></bean>  
+    </mvc:interceptors>  
+    
+    <!-- 支持上传文件 --> 
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+    
+</beans>

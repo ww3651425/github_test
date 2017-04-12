@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title></title>
+<link href="/images/admin/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td class="rightbox">
+    	<form name=frmSearch method=get action= "">
+		<table width=100% border=0 cellpadding=4 cellspacing=0 >
+			<tr>
+				<td ><font class="righttitle">#entityName#</font> <a href="list" >list</a> <a href="add" >add</a></td>
+		    </tr>
+		</table>
+	  </form>
+	  </td>
+  </tr>
+</table>
+<table width="100" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td height="10"></td>
+  </tr>
+</table>	
+<table width=100% border=0 cellpadding=4 cellspacing=1  bgcolor="#F7F7F7">
+	<tr>
+		<td width=35 height=24 align="center" ><input type="checkbox" /></td>
+		<td width="120" >Oper</td>
+	</tr>
+	<#if (pageBean.totalCount == 0)>
+	<tr class=css_norecord>
+		<td colspan=2 >No data.</td>
+	</tr>
+	<#else>
+		<#list pageBean.list as entity>
+		<tr bgcolor=#ffffff height=14 id="hovertr" >
+			<td align="center" ><input type="checkbox" name="id" value="${entity.id}" id="id" /></td>
+			<td >
+				<a href="modify/${entity.id}" />modify</a>
+				<a href="javascript:if(confirm('Delete?')){location.href='del/${entity.id}';}" >delete</a>
+			</td>
+		</tr>
+		</#list>
+	</#if>
+	<tr>
+		<td colspan=2 >
+			<div class="digg">
+			<#import "../../tld/page.ftl" as hw><@hw.page pageBean=pageBean style="1" url="list?pageNo={0}&cid=${cid}&fieldKey=${fieldKey}&fieldVal=${fieldVal}"/>
+			</div>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

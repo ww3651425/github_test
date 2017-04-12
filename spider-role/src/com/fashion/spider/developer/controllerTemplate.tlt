@@ -1,0 +1,126 @@
+package com.shop.web.controller.admin;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+
+import com.shop.model.#entityName#;
+import com.shop.service.#className#Service;
+import com.shop.util.Page;
+import com.shop.web.controller.BaseController;
+
+@Controller
+@RequestMapping("/admin/#entityName?toLowerCase()#")
+public class #className#Controller extends BaseController{
+
+	@Autowired
+	private #className#Service #className?toLowerCase()#Service;
+	
+	
+	/***
+	 * 列表
+	 * @param map
+	 * @return
+	 */
+	@RequestMapping(value = "/list", method=RequestMethod.GET)
+	public String cat(ModelMap map){
+		int pageNo = 1;
+		if( getRequest().getParameter("pageNo") != null ){
+			pageNo = Integer.parseInt(getRequest().getParameter("pageNo"));
+		}
+		String sWhere = "";
+		int cid = 0;
+		if( getRequest().getParameter("cid") != null ){
+			cid = Integer.parseInt(getRequest().getParameter("cid"));
+			if( cid > 0 )sWhere = "and cid=" + cid;
+		}
+		String fieldKey = getRequest().getParameter("fieldKey");
+		String fieldVal = getRequest().getParameter("fieldVal");
+		if(StringUtils.isNotBlank(fieldKey) && StringUtils.isNotBlank(fieldVal)){
+			sWhere = "and " + fieldKey + "=" + fieldVal;
+		}
+		if( StringUtils.isNotBlank(sWhere) ){
+			sWhere = sWhere.substring(3);
+		}
+		String sql = "select * from #entityName?toLowerCase()#";
+		Page<#entityName#> pageBean = #className?toLowerCase()#Service.getPage(pageNo, pageSize, sql);
+		map.put("pageBean", pageBean);
+		map.put("pageNo", pageNo);
+		map.put("cid", cid);
+		map.put("fieldKey", fieldKey);
+		map.put("fieldVal", fieldVal);
+		
+		return "admin/#entityName?toLowerCase()#/list.ftl";
+	}
+	
+	/***
+	 * 表单
+	 * @return
+	 */
+	@RequestMapping(value = "/add")
+	public String form(ModelMap map){
+		#entityName# entity = new #entityName#();
+		map.put("entity", entity);
+		return "admin/#entityName?toLowerCase()#/form.ftl";
+	}
+	
+	/***
+	 * 修改
+	 * @return
+	 */
+	@RequestMapping(value = "/modify/{id}")
+	public String modify(@PathVariable int id, ModelMap map){
+		#entityName# entity = #className?toLowerCase()#Service.get(id);
+		map.put("entity", entity);
+		return "admin/#entityName?toLowerCase()#/form.ftl";
+	}
+	
+	/***
+	 * 初始化
+	 * @param binder
+	 */
+	@InitBinder
+	public void initBinder(ServletRequestDataBinder binder) {
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    dateFormat.setLenient(false);
+	    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+	}
+
+	/***
+	 * 保存
+	 * @return
+	 */
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
+	public ModelAndView save(@ModelAttribute("#entityName#") #entityName# entity){
+		if( entity.getId() == null || entity.getId() == 0 ){
+			#className?toLowerCase()#Service.add(entity);
+		}else{
+			#className?toLowerCase()#Service.update(entity);
+		}
+		return new ModelAndView(new RedirectView("/admin/#entityName?toLowerCase()#/list?parentCid=" + entity.getId()));
+	}
+	
+	/***
+	 * 删除
+	 * @return
+	 */
+	@RequestMapping(value = "/del/{id}")
+	public ModelAndView del(@PathVariable int id){
+		#className?toLowerCase()#Service.delete(id);
+		return new ModelAndView(new RedirectView("/admin/#entityName?toLowerCase()#/list"));
+	}
+	
+}
